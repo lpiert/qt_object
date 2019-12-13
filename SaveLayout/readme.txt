@@ -1,0 +1,1 @@
+Qt 保存布局，默认保存在注册表，QSettings::filename 方法看到保存的路径。
