@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>web/echart/zh/src/echarts/echarts.js</file>
+        <file>web/index.html</file>
+    </qresource>
+</RCC>

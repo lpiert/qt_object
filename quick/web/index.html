@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ECharts</title>
+  <!-- 引入 echarts.js -->
+  <script src="./echart/zh/src/echarts/echarts.js"></script>
+  <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+  }
+
+  #main {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: absolute
+  }
+</style>
+
+<body>
+  <div id="main"></div>
+  <script type="text/javascript">
+    // 绘图样式
+    var option = {
+      xAxis: {
+        type: 'category',
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [{
+        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        type: 'line'
+      }]
+    };
+
+
+    // 绘图数据
+    var data = []
+
+    // 这是QML端的QtObject
+    var backend;
+    window.onload = function () {
+      new QWebChannel(qt.webChannelTransport, function (channel) {
+        // 在channel.object下，所有发布的对象在通道中都是可用的
+        // 在附加的WebChannel.id属性中设置的标识符。
+        backend = channel.objects.backend;
+        //连接信号:insert data
+        backend.signal_insert_data.connect(function (y, x) {
+          console.log("signal_insert_data," + 'x:' + x, 'y:' + y)
+          data.push([y, x]);
+          myChart.setOption({
+            series: [{
+              data: data
+            }]
+          });
+        });
+        //连接信号:update option
+        //参数是json对象 or 'json'
+        backend.signal_update_option.connect(function (opt) {
+          console.log('signal_update_option')
+          var opt_ = JSON.parse(opt);
+          console.log(opt_)
+          myChart.setOption(opt_);
+        });
+
+      });
+    }
+    function update_chart_option(opt) {
+      console.log("update_chart_option," + 'opt:' + opt)
+      myChart.setOption(opt);
+    }
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+
+
+  </script>
+</body>
+
+</html>
