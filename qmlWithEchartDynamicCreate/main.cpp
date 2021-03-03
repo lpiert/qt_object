@@ -28,9 +28,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QtWebEngine::initialize();
     qmlRegisterMySingleton();
-    ads::CDockManager::setConfigFlag(ads::CDockManager::FocusHighlighting, true);
-    ads::CDockManager::setConfigFlag(
-                ads::CDockManager::AllTabsHaveCloseButton, true);
     QApplication app(argc, argv);
     MainWindow w;
     w.show();
