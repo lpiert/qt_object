@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="./echart/zh/src/echarts/echarts.js"></script>
+    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    #main {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        position: absolute
+    }
+</style>
+
+<body>
+    <div id="main"></div>
+    <script type="text/javascript">
+    // 初始化样式
+      function initStyle(style) {
+          var obj = document.getElementById('main');
+          obj.style = style;
+    }
+      function updateSize() {
+          var obj = document.getElementById('main');
+          obj.style.height = '100vh';
+          obj.style.width = '100vw';
+      }
+    // 初始化绘图样式
+    var option = {}
+    var myChart;
+    function initOption(opt) {
+        option = JSON.parse(opt);
+    }
+
+    // 绘图
+    function draw(){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        // 使用刚指定的配置项和数据显示图表。
+        console.log("option" + option);
+        myChart.setOption(option);
+    }
+    // 这是QML端的QtObject
+    var backend;
+    window.onload = function () {
+        console.log("window.onloadoing......")
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            // 在channel.object下，所有发布的对象在通道中都是可用的
+            // 在附加的WebChannel.id属性中设置的标识符。
+            backend = channel.objects.backend;
+            // 连接信号:init option
+            backend.signal_init_option.connect(function (opt) {
+                console.log(opt);
+                var opt_ = JSON.parse(opt);
+                option = opt_
+                console.log(option);
+
+            });
+            // 连接信号:update option
+            backend.signal_update_option_x.connect(function (id,data) {
+                var data = JSON.parse(data);
+                option.xAxis[id] = data;
+            });
+            // 连接信号:signal_update_option_y
+            backend.signal_update_option_y.connect(function (id, data) {
+                console.log("signal_update_option");
+                var data = JSON.parse(data);
+                option.yAxis[id] = data;
+            });
+            // 连接信号:signal_update_option_s
+            backend.signal_update_option_s.connect(function (id, data) {
+                console.log("signal_update_option");
+                var data = JSON.parse(data);
+                option.series[0][id] = data;
+            });
+
+            // 连接信号:draw 
+            backend.signal_draw.connect(function () {
+                console.log("signal_draw");
+                myChart = echarts.init(document.getElementById('main'));
+                console.log("opt now:" + option.series["data"]);
+                myChart.setOption(option);
+            });
+
+            // 加载图表
+            backend.requestLoadChart();
+        });
+    }
+    </script>
+</body>
+
+</html>

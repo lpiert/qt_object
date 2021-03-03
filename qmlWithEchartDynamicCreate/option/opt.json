@@ -1,0 +1,33 @@
+{
+        "line": {
+                "xAxis": {
+                        "type": "category",
+                        "data": ["test", "just", "do"]
+                },
+                "yAxis": {
+                        "type": "value"
+                },
+                "series": [{
+                        "data": ["1", "100", "1000"],
+                        "type": "line"
+                }]
+        },
+
+        "bar": {
+                "xAxis": {
+                        "type": "category",
+                        "data": []
+                },
+                "yAxis": {
+                        "type": "value"
+                },
+                "series": [{
+                        "data": [],
+                        "type": "bar",
+                        "showBackground": "true",
+                        "backgroundStyle": {
+                                "color": "rgba(180, 180, 180, 0.2)"
+                        }
+                }]
+        }
+}
